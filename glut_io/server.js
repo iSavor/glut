@@ -19,14 +19,23 @@ server.lastPlayderID = 0;
 
 io.on('connection',function(socket){
     socket.on('newplayer',function(){
-        console.log("new player");
         socket.player = {
             id: server.lastPlayderID++,
             x: randomInt(100, 400),
-            y: randomInt(100, 400)
+            y: randomInt(100, 400),
+            v: [0, 0]
         };
         socket.emit('allplayers',getAllPlayers());
         socket.broadcast.emit('newplayer',socket.player);
+
+        socket.on('disconnect',function(){
+            io.emit('remove',socket.player.id);
+        });
+
+        socket.on('changeVelo', function(v){
+            socket.player.v = v;
+            io.emit('move', socket.player);
+        });
     });
 });
 

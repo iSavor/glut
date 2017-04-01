@@ -1,6 +1,7 @@
 var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 var game;
+var cursors;
 var Game = {};
 
 function login() {
@@ -15,6 +16,7 @@ function gameInit() {
 
 Game.init = function(){
     game.state.disableVisibilityChange = true;
+    cursors = game.input.keyboard.createCursorKeys();
 }
 
 Game.preload = function() {
@@ -31,9 +33,37 @@ Game.create = function() {
 }
 
 Game.update = function() {
+    if (cursors.left.isDown) {
+        Client.changeVelo([-150, 0]);
+    } else if (cursors.right.isDown) {
+        Client.changeVelo([150, 0]);
+    } else if (cursors.up.isDown) {
+        Client.changeVelo([0, -150]);
+    } else if (cursors.down.isDown) {
+        Client.changeVelo([0, 150]);
+    }
+
+    for (id in Game.playerMap) {
+        Game.playerMap[id].body.velocity.x = 0;
+        Game.playerMap[id].body.velocity.y = 0;
+    }
+
 }
 
-Game.addNewPlayer = function(id,x,y){
-    console.log(x, y);
+Game.addNewPlayer = function(id,x,y,v){
+    console.log(x, y, v);
     Game.playerMap[id] = game.add.sprite(x,y,'player');
+    game.physics.enable(Game.playerMap[id], Phaser.Physics.ARCADE);
+    Game.playerMap[id].body.velocity.x = v[0];
+    Game.playerMap[id].body.velocity.y = v[1];
 };
+
+Game.removePlayer = function(id){
+    Game.playerMap[id].destroy();
+    delete Game.playerMap[id];
+};
+
+Game.movePlayer = function(player){
+    Game.playerMap[player.id].body.velocity.x = player.v[0];
+    Game.playerMap[player.id].body.velocity.y = player.v[1];
+}
