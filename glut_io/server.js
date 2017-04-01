@@ -45,8 +45,7 @@ io.on('connection', function(socket) {
             } else if (socket.player.v[1] < -200) {
                 socket.player.v[1] = -200;
             }
-            io.sockets.emit('move', socket.player);
-            //socket.broadcast.emit('move', socket.player);
+            io.emit('move', socket.player);
         });
 
         socket.on('slowDown', function() {
@@ -64,8 +63,7 @@ io.on('connection', function(socket) {
                     socket.player.v[1] += 10;
                 }
             }
-            io.sockets.emit('move', socket.player);
-            //socket.broadcast.emit('move', socket.player);
+            io.emit('move', socket.player);
         });
     });
 });
