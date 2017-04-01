@@ -1,0 +1,23 @@
+var mongoose = require('mongoose');
+var bcrypt = require('bcrypt-nodejs');
+
+var userSchema = mongoose.Schema({
+	local: {
+		username: String,
+		nickname: String,
+		password: String,
+	},
+	record: {
+		highscore: Number
+	}
+});
+
+userSchema.methods.generateHash = function(password) {
+	return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+};
+
+userSchema.methods.validPassword = function() {
+	return bcrypt.compareSync(password, this.password);	
+};
+
+module.exports = mongoose.model('User', userSchema);
