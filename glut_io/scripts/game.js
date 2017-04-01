@@ -14,7 +14,7 @@ function gameInit() {
     game.state.start('Game');
 }
 
-Game.init = function(){
+Game.init = function() {
     game.state.disableVisibilityChange = true;
     cursors = game.input.keyboard.createCursorKeys();
 }
@@ -27,43 +27,44 @@ Game.preload = function() {
 
 Game.create = function() {
     Game.playerMap = {};
-    var background = game.add.tileSprite(0, 0, width, height, 'background');
+    var background = game.add.tileSprite(0, 0, 1920, 1920, 'background');
+    game.world.setBounds(0, 0, 1920, 1920);
     Client.askNewPlayer();
     console.log('created');
 }
 
 Game.update = function() {
-    if (cursors.left.isDown) {
-        Client.changeVelo([-150, 0]);
-    } else if (cursors.right.isDown) {
-        Client.changeVelo([150, 0]);
-    } else if (cursors.up.isDown) {
-        Client.changeVelo([0, -150]);
-    } else if (cursors.down.isDown) {
-        Client.changeVelo([0, 150]);
-    }
+    Client.slowDown();
 
-    for (id in Game.playerMap) {
-        Game.playerMap[id].body.velocity.x = 0;
-        Game.playerMap[id].body.velocity.y = 0;
+    if (cursors.left.isDown) {
+        Client.changeVelo([-20, 0]);
+    } else if (cursors.right.isDown) {
+        Client.changeVelo([20, 0]);
+    } else if (cursors.up.isDown) {
+        Client.changeVelo([0, -20]);
+    } else if (cursors.down.isDown) {
+        Client.changeVelo([0, 20]);
     }
 
 }
 
-Game.addNewPlayer = function(id,x,y,v){
-    console.log(x, y, v);
-    Game.playerMap[id] = game.add.sprite(x,y,'player');
+Game.addNewPlayer = function(id, x, y, v) {
+    Game.playerMap[id] = game.add.sprite(x, y, 'player');
     game.physics.enable(Game.playerMap[id], Phaser.Physics.ARCADE);
     Game.playerMap[id].body.velocity.x = v[0];
     Game.playerMap[id].body.velocity.y = v[1];
 };
 
-Game.removePlayer = function(id){
+Game.setCam = function(id){
+    game.camera.follow(Game.playerMap[id]);
+}
+
+Game.removePlayer = function(id) {
     Game.playerMap[id].destroy();
     delete Game.playerMap[id];
 };
 
-Game.movePlayer = function(player){
+Game.movePlayer = function(player) {
     Game.playerMap[player.id].body.velocity.x = player.v[0];
     Game.playerMap[player.id].body.velocity.y = player.v[1];
 }
