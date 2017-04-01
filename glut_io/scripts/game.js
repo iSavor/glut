@@ -15,7 +15,6 @@ function gameInit() {
 
 Game.init = function(){
     game.state.disableVisibilityChange = true;
-    game.physics.startSystem(Phaser.Physics.ARCADE);
 }
 
 Game.preload = function() {
@@ -25,10 +24,8 @@ Game.preload = function() {
 }
 
 Game.create = function() {
-    Game.playerMap = game.add.group();
-    Game.playerMap.enableBody = true;
-    Game.background = game.add.tileSprite(0, 0, width, height, 'background');
-    Game.cursors = game.input.keyboard.createCursorKeys();
+    Game.playerMap = {};
+    var background = game.add.tileSprite(0, 0, width, height, 'background');
     Client.askNewPlayer();
     console.log('created');
 }
@@ -38,15 +35,5 @@ Game.update = function() {
 
 Game.addNewPlayer = function(id,x,y){
     console.log(x, y);
-    Game.playerMap.create(x, y, 'player');
-    player = Game.playerMap[id];
-    game.physics.arcade.enable(player);
-    player.body.bounce.y = 0.2;
-    player.body.gravity.y = 0;
-    player.body.collideWorldBounds = true;
-};
-
-Game.removePlayer = function(id){
-    Game.playerMap[id].destroy();
-    delete Game.playerMap[id];
+    Game.playerMap[id] = game.add.sprite(x,y,'player');
 };
