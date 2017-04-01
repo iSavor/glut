@@ -1,0 +1,14 @@
+{
+  "name": "glut.io",
+  "version": "1.0.0",
+  "description": "LA Hacks project",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+      "socket.io": "latest"
+  },
+  "author": "Qianmeng Chen, Kevin Qian, Zeyuan Chen, Yizhu Zhang",
+  "license": "ISC"
+}
