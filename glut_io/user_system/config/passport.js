@@ -17,7 +17,7 @@ module.exports = function(passport) {
 		passReqToCallback: true
 	}, function (req, username, password, done) {
 		process.nextTick(function () {
-			User.findOne({'username': username}, function (err, user) {
+			User.findOne({'local.username': username}, function (err, user) {
 				if (err) {
 					return done(err);
 				}
@@ -39,4 +39,23 @@ module.exports = function(passport) {
 			});
 		});
 	}));
+	
+	passport.use('login', new LocalStrategy({
+			usernameField: 'username',
+			passwordField: 'password',
+			passReqToCallback: true
+		}, function (req, username, password, done) {
+//			process.nextTick(function () {
+				User.findOne({'local.username': username}, function (err, user) {
+					if (err) {
+						return done(err);
+					}
+					if (!user || !user.validPassword(password)) {
+						return done(null, false, req.flash("loginMessage", "Incorrect email or password."));
+					} else {
+						return done(null, user);
+					}
+				});
+//			});
+		}));
 };

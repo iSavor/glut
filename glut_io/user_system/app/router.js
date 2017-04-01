@@ -1,14 +1,16 @@
 function isAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) {
-		next();
+		return next();
 	} else {
 		res.redirect('login');
 	}
 }
 
 module.exports = function(app, passport) {
-	app.get('/', function (req, res) {
-		res.render('main.ejs');
+	app.get('/', isAuthenticated, function (req, res) {
+		res.render('main.ejs', {
+			user: req.user
+		});
 	});
 	
 	app.get('/login', function (req, res) {
@@ -16,6 +18,12 @@ module.exports = function(app, passport) {
 			message: req.flash('loginMessage')
 		});
 	});
+	
+	app.post('/login', passport.authenticate('login', {
+		successRedirect: '/',
+		failureRedirect: '/login',
+		failureFlash: true
+	}));
 	
 	app.get('/signup', function (req, res) {
 		res.render('signup.ejs', {
@@ -28,4 +36,9 @@ module.exports = function(app, passport) {
 		failureRedirect: '/signup',
 		failureFlash: true
 	}));
+	
+	app.get('/logout', function(req, res) {
+		req.logout();
+		res.redirect('/login');
+	});
 };
