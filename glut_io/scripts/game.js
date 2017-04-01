@@ -21,7 +21,7 @@ Game.init = function() {
 
 Game.preload = function() {
     game.load.image('background', 'assets/background.png');
-    game.load.image('player', 'assets/player.jpg');
+    game.load.image('player', 'assets/player.png');
     console.log('preloaded');
 }
 
