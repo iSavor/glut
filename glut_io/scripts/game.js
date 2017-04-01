@@ -15,7 +15,7 @@ function gameInit() {
 }
 
 Game.init = function() {
-    game.state.disableVisibilityChange = true;
+    //game.state.disableVisibilityChange = true;
     cursors = game.input.keyboard.createCursorKeys();
 }
 
@@ -60,11 +60,17 @@ Game.setCam = function(id){
 }
 
 Game.removePlayer = function(id) {
+    if (id >= Game.playerMap.length) {
+        return;
+    }
     Game.playerMap[id].destroy();
     delete Game.playerMap[id];
 };
 
 Game.movePlayer = function(player) {
+    if (player.id >= Game.playerMap.length) {
+        return;
+    }
     Game.playerMap[player.id].body.velocity.x = player.v[0];
     Game.playerMap[player.id].body.velocity.y = player.v[1];
 }

@@ -33,5 +33,6 @@ Client.socket.on('remove', function(id) {
 });
 
 Client.socket.on('move', function(player) {
+	console.log(player.v)
     Game.movePlayer(player);
 });
