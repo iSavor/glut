@@ -22,17 +22,17 @@ Client.socket.on('setCam', function(id){
 });
 
 Client.socket.on('createSelf', function (struct) {
-    Game.createSelfPlayer(struct.id, struct.x, struct.y, struct.v);
+    Game.createSelfPlayer(struct.id, struct.x, struct.y, struct.v, struct.r);
 });
 
 Client.socket.on('notifyNewComer', function (struct) {
 	console.log("new comer!!!");
-    Game.addNewPlayer(struct.id, struct.x, struct.y, struct.v);
+    Game.addNewPlayer(struct.id, struct.x, struct.y, struct.v, struct.r);
 });
 
 Client.socket.on('allPlayers', function(data) {
     for (var i = 0; i < data.length; i++) {
-        Game.addNewPlayer(data[i].id, data[i].x, data[i].y, data[i].v);
+        Game.addNewPlayer(data[i].id, data[i].x, data[i].y, data[i].v, data[i].r);
     }
 });
 

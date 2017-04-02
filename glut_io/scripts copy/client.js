@@ -13,8 +13,8 @@ Client.slowDown = function() {
     Client.socket.emit('slowDown');
 }
 
-Client.broadcastSelfPos = function (x, y) {
-    Client.socket.emit('updateAndBroadcastSelfStructPos', {x: x, y: y})
+Client.broadcastSelfPos = function (x, y, r) {
+    Client.socket.emit('updateAndBroadcastSelfStructPos', {x: x, y: y, r: r})
 }
 
 Client.socket.on('setCam', function(id){
