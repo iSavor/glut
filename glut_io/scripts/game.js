@@ -75,3 +75,11 @@ Game.movePlayer = function(player) {
     Game.playerMap[player.id].body.velocity.x = player.v[0];
     Game.playerMap[player.id].body.velocity.y = player.v[1];
 }
+
+Game.moveOtherPlayer = function(player) {
+    if (!(player.id in Game.playerMap)) {
+        return;
+    }
+    Game.playerMap[player.id].body.position.x = player.x;
+    Game.playerMap[player.id].body.position.y = player.y;
+}

@@ -36,3 +36,8 @@ Client.socket.on('move', function(player) {
 	console.log(player.v)
     Game.movePlayer(player);
 });
+
+Client.socket.on('moveother', function(player) {
+    console.log(player.v)
+    Game.moveOtherPlayer(player);
+});
