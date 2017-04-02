@@ -57,6 +57,12 @@ Game.update = function() {
     if (Game.local.actor) {
         Client.broadcastSelfPos(Game.local.actor.body.position.x, Game.local.actor.body.position.y);
     }
+
+    var allPlayers = [];
+    for (var key in Game.playerMap) {
+        allPlayers.push(Game.playerMap[key]);
+    }
+    game.physics.arcade.collide(allPlayers, allPlayers);
 }
 
 Game.local = {
