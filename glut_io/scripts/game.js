@@ -26,6 +26,8 @@ Game.preload = function() {
 }
 
 Game.create = function() {
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
     Game.playerMap = {};
     var background = game.add.tileSprite(0, 0, 1920, 1920, 'background');
     game.world.setBounds(0, 0, 1920, 1920);
@@ -36,15 +38,22 @@ Game.create = function() {
 Game.update = function() {
     Client.slowDown();
 
-    if (cursors.left.isDown) {
-        Client.changeVelo([-20, 0]);
-    } else if (cursors.right.isDown) {
-        Client.changeVelo([20, 0]);
-    } else if (cursors.up.isDown) {
-        Client.changeVelo([0, -20]);
-    } else if (cursors.down.isDown) {
-        Client.changeVelo([0, 20]);
+    // if (cursors.left.isDown) {
+    //     Client.changeVelo([-20, 0]);
+    // } else if (cursors.right.isDown) {
+    //     Client.changeVelo([20, 0]);
+    // } else if (cursors.up.isDown) {
+    //     Client.changeVelo([0, -20]);
+    // } else if (cursors.down.isDown) {
+    //     Client.changeVelo([0, 20]);
+    // }
+
+    if (!Game.local.actor)
+    {
+       return;
     }
+    Game.local.actor.rotation = game.physics.arcade.angleToPointer(Game.local.actor);
+
     
     if (Game.local.actor) {
         Client.broadcastSelfPos(Game.local.actor.body.position.x, Game.local.actor.body.position.y);
@@ -55,6 +64,14 @@ Game.local = {
     actor: null,
     id: -1
 };
+
+Game.render = function(){
+    if (!Game.local.actor)
+    {
+       return;
+    }
+      game.debug.spriteInfo(Game.local.actor, 32, 32);
+}
 
 Game.createSelfPlayer = function (id, x, y, v) {
     Game.local.actor = game.add.sprite(x, y, 'player');
@@ -67,6 +84,7 @@ Game.createSelfPlayer = function (id, x, y, v) {
     
     game.camera.follow(Game.local.actor);
     //Game.setCam(Game.local.actor);
+    Game.local.actor.anchor.setTo(0.5, 0.5);
 }
 
 Game.addNewPlayer = function(id, x, y, v) {
