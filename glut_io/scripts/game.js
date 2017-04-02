@@ -29,6 +29,17 @@ Game.create = function() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
 
+    
+    Game.local.actor = game.add.sprite(game.world.centerX, game.world.centerY, 'phaser');
+    Game.local.actor.anchor.set(0.5);
+
+    //  And enable the Sprite to have a physics body:
+    game.physics.arcade.enable(Game.local.actor);
+
+
+
+
+
     Game.playerMap = {};
     var background = game.add.tileSprite(0, 0, 1920, 1920, 'background');
     game.world.setBounds(0, 0, 1920, 1920);
@@ -39,19 +50,28 @@ Game.create = function() {
 Game.update = function() {
     Client.slowDown();
 
+    //rotation
     if (!Game.local.actor)
     {
        return;
     }
     Game.local.actor.rotation = game.physics.arcade.angleToPointer(Game.local.actor);
     
-    if (game.input.mousePointer.isDown) {
-        var xaxis = game.input.x - Game.local.actor.body.position.x;
-        var yaxis = game.input.y - Game.local.actor.body.position.y;
-        var zaxis = Math.sqrt(Math.pow(xaxis, 2) + Math.pow(yaxis, 2));
 
-        Client.changeVelo([xaxis/zaxis*20, yaxis/zaxis*20]);
+    //follow
+    if (game.physics.arcade.distanceToPointer(Game.local.actor, game.input.activePointer) > 8)
+    {
+        //  Make the object seek to the active pointer (mouse or touch).
+        game.physics.arcade.moveToPointer(Game.local.actor, 300);
     }
+    else
+    {
+        //  Otherwise turn off velocity because we're close enough to the pointer
+        Game.local.actor.body.velocity.set(0);
+    }
+
+
+
 
     
     if (Game.local.actor) {
@@ -63,6 +83,7 @@ Game.update = function() {
         allPlayers.push(Game.playerMap[key]);
     }
     game.physics.arcade.collide(allPlayers, allPlayers);
+    
 }
 
 Game.local = {
