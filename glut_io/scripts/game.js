@@ -4,6 +4,7 @@ var game;
 var cursors;
 var Game = {};
 
+
 Game.local = {
     actor: null,
     id: -1
@@ -28,8 +29,10 @@ Game.init = function() {
 }
 
 Game.preload = function() {
+
     game.load.image('background', 'assets/background.png');
-    game.load.image('player', 'assets/player.png');
+    game.load.image('player', 'assets/upper.png');
+    game.load.image('mouth', 'assets/lower.png');
     game.load.image('food', 'assets/food.png');
     console.log('preloaded');
 };
@@ -58,6 +61,13 @@ Game.create = function() {
     foods = game.add.group();
     foods.enableBody = true;
     Game.generateFood();
+
+    // mouth 
+    Game.local.mouth = game.add.sprite(game.world.centerX, game.world.centerY, 'phaser');
+    game.physics.arcade.enable(Game.local.mouth);
+    Game.local.mouth.anchor.set(0.5);
+    Game.mouthMap = {};
+
 }
 
 Game.update = function() {
@@ -81,6 +91,31 @@ Game.update = function() {
     if (Game.local.actor) {
         Client.broadcastSelfPos(Game.local.actor.body.position.x, Game.local.actor.body.position.y, Game.local.actor.rotation);
     }
+
+
+    for (var key in Game.playerMap) {
+        Game.mouthMap[key].rotation = Game.playerMap[key].rotation;
+        var theta = Game.mouthMap[key].rotation;
+        var tempx = Game.playerMap[key].centerX + Math.cos(theta)*68
+        var tempy = Game.playerMap[key].centerY + Math.sin(theta)*68
+        Game.mouthMap[key].centerX = tempx;
+        Game.mouthMap[key].centerY = tempy;
+    }
+
+    // //mouth to head angle
+    // Game.local.mouth.rotation = Game.local.actor.rotation;
+    // //mouth to point 
+    
+    // var theta = Game.local.mouth.rotation;
+    // var tempx = Game.local.actor.centerX + Math.cos(theta)*68
+    // var tempy = Game.local.actor.centerY + Math.sin(theta)*68
+ 
+    // // debugger;
+    // // game.physics.arcade.moveToXY(Game.local.mouth,tempx,tempy,300);
+    // Game.local.mouth.centerX = tempx;
+    // Game.local.mouth.centerY = tempy;
+
+
     
     
 //    for (var key in Game.playerMap) {
@@ -89,7 +124,12 @@ Game.update = function() {
     game.physics.arcade.collide(allPlayers, allPlayers);
     
     game.physics.arcade.collide(allPlayers, foods);
+
+
 }
+
+
+
 
 
 Game.render = function(){
@@ -116,6 +156,20 @@ Game.createSelfPlayer = function (id, x, y, v, r) {
     Game.local.actor.anchor.setTo(0.5, 0.5);
     
     allPlayers.push(Game.local.actor);
+
+
+    //mouth
+    Game.local.mouth = game.add.sprite(x-64, y, 'mouth');
+    Game.mouthMap[id] = Game.local.mouth;
+    game.physics.enable(Game.mouthMap[id], Phaser.Physics.ARCADE);
+    Game.local.mouth.body.velocity.x = v[0];
+    Game.local.mouth.body.velocity.y = v[1];
+
+    Game.local.mouth.body.collideWorldBounds = true;
+    
+    Game.local.mouth.anchor.setTo(0.5, 0.5);
+    
+
 }
 
 // Rot add
@@ -132,6 +186,22 @@ Game.addNewPlayer = function(id, x, y, v, r) {
     Game.playerMap[id].body.collideWorldBounds = true;
     
     allPlayers.push(Game.playerMap[id]);
+
+
+
+    //mouth
+
+    Game.mouthMap[id] = game.add.sprite(x, y, 'mouth');
+    game.physics.enable(Game.mouthMap[id], Phaser.Physics.ARCADE);
+    Game.mouthMap[id].body.velocity.x = v[0];
+    Game.mouthMap[id].body.velocity.y = v[1];
+    Game.mouthMap[id].rotation = r;
+    
+    Game.mouthMap[id].body.collideWorldBounds = true;
+    
+    allPlayers.push(Game.mouthMap[id]);
+
+
 };
 
 Game.setCam = function(actor){
