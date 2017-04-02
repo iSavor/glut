@@ -69,7 +69,7 @@ Game.removePlayer = function(id) {
 };
 
 Game.movePlayer = function(player) {
-    if (player.id >= Game.playerMap.length) {
+    if (!(player.id in Game.playerMap)) {
         return;
     }
     Game.playerMap[player.id].body.velocity.x = player.v[0];
