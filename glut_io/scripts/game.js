@@ -28,6 +28,7 @@ Game.preload = function() {
 Game.create = function() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
+
     Game.playerMap = {};
     var background = game.add.tileSprite(0, 0, 1920, 1920, 'background');
     game.world.setBounds(0, 0, 1920, 1920);
@@ -38,21 +39,19 @@ Game.create = function() {
 Game.update = function() {
     Client.slowDown();
 
-    // if (cursors.left.isDown) {
-    //     Client.changeVelo([-20, 0]);
-    // } else if (cursors.right.isDown) {
-    //     Client.changeVelo([20, 0]);
-    // } else if (cursors.up.isDown) {
-    //     Client.changeVelo([0, -20]);
-    // } else if (cursors.down.isDown) {
-    //     Client.changeVelo([0, 20]);
-    // }
-
     if (!Game.local.actor)
     {
        return;
     }
     Game.local.actor.rotation = game.physics.arcade.angleToPointer(Game.local.actor);
+    
+    if (game.input.mousePointer.isDown) {
+        var xaxis = game.input.x - Game.local.actor.body.position.x;
+        var yaxis = game.input.y - Game.local.actor.body.position.y;
+        var zaxis = Math.sqrt(Math.pow(xaxis, 2) + Math.pow(yaxis, 2));
+
+        Client.changeVelo([xaxis/zaxis*20, yaxis/zaxis*20]);
+    }
 
     
     if (Game.local.actor) {
