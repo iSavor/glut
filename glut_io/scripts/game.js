@@ -41,7 +41,7 @@ Game.create = function() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     
     Game.local.actor = game.add.sprite(game.world.centerX, game.world.centerY, 'phaser');
-    Game.local.actor.anchor.set(0.5);
+    Game.local.actor.anchor.setTo(0.5);
 
     //  And enable the Sprite to have a physics body:
     game.physics.arcade.enable(Game.local.actor);
@@ -65,7 +65,7 @@ Game.create = function() {
     // mouth 
     Game.local.mouth = game.add.sprite(game.world.centerX, game.world.centerY, 'phaser');
     game.physics.arcade.enable(Game.local.mouth);
-    Game.local.mouth.anchor.set(0.5, 0.5);
+    Game.local.mouth.anchor.setTo(0.5, 0.5);
     Game.mouthMap = {};
 
 }
@@ -89,7 +89,8 @@ Game.update = function() {
     }
 
     if (Game.local.actor) {
-        Client.broadcastSelfPos(Game.local.actor.body.position.x, Game.local.actor.body.position.y, Game.local.actor.rotation);
+        //Client.broadcastSelfPos(Game.local.actor.body.position.x, Game.local.actor.body.position.y, Game.local.actor.rotation);
+        Client.broadcastSelfPos(Game.local.actor.x, Game.local.actor.y, Game.local.actor.rotation);
     }
 
 
@@ -98,10 +99,14 @@ Game.update = function() {
         Game.mouthMap[key].rotation = Game.playerMap[key].rotation;
         console.log("After: " + Game.mouthMap[key].rotation);
         var theta = Game.mouthMap[key].rotation;
-        var tempx = Game.playerMap[key].centerX + Math.cos(theta)*68;
-        var tempy = Game.playerMap[key].centerY + Math.sin(theta)*68;
-        Game.mouthMap[key].centerX = tempx;
-        Game.mouthMap[key].centerY = tempy;
+        //var tempx = Game.playerMap[key].centerX + Math.cos(theta)*68;
+        //var tempy = Game.playerMap[key].centerY + Math.sin(theta)*68;
+        var tempx = Game.playerMap[key].x + Math.cos(theta)*68;
+        var tempy = Game.playerMap[key].y + Math.sin(theta)*68;
+        Game.mouthMap[key].x = tempx;
+        Game.mouthMap[key].y = tempy;
+        //Game.mouthMap[key].centerX = tempx;
+        //Game.mouthMap[key].centerY = tempy;
     }
 
     // //mouth to head angle
@@ -149,7 +154,7 @@ Game.createSelfPlayer = function (id, x, y, v, r) {
     game.physics.enable(Game.playerMap[id], Phaser.Physics.ARCADE);
     Game.local.actor.body.velocity.x = v[0];
     Game.local.actor.body.velocity.y = v[1];
-    //Game.local.actor.rotation = r;
+    Game.local.actor.rotation = r;
     
     Game.local.actor.body.collideWorldBounds = true;
     
@@ -197,21 +202,22 @@ Game.addNewPlayer = function(id, x, y, v, r) {
 
     //mouth
 
-    debugger;
-
     Game.mouthMap[id] = game.add.sprite(x, y, 'mouth');
     game.physics.enable(Game.mouthMap[id], Phaser.Physics.ARCADE);
+    //Game.mouthMap[id].rotation = r;
+    Game.mouthMap[id].anchor.setTo(0.5, 0.5);
     
+//    Game.mouthMap[id].rotation = r;
 //    var theta = Game.mouthMap[key].rotation;
 //    var tempx = Game.playerMap[key].centerX + Math.cos(theta)*68;
 //    var tempy = Game.playerMap[key].centerY + Math.sin(theta)*68;
+//    Game.mouthMap[key].centerX = tempx;
+//    Game.mouthMap[key].centerY = tempy;
     
-    Game.mouthMap[id].x = x + Math.cos(r) * 68;
-    Game.mouthMap[id].y = y + Math.sin(r) * 68;
+    //Game.mouthMap[id].x = x + Math.cos(r) * 68;
+    //Game.mouthMap[id].y = y + Math.sin(r) * 68;
     //Game.mouthMap[id].body.velocity.x = v[0];
     //Game.mouthMap[id].body.velocity.y = v[1];
-    Game.mouthMap[id].rotation = r;
-    Game.mouthMap[id].anchor.setTo(0.5, 0.5);
     
     Game.mouthMap[id].body.collideWorldBounds = true;
     

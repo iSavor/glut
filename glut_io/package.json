@@ -7,7 +7,19 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-      "socket.io": "latest"
+      "socket.io": "latest",
+      "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.17.1",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.6",
+    "express": "^4.15.2",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.15.2",
+    "mongoose": "^4.9.2",
+    "morgan": "^1.8.1",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0"
   },
   "author": "Qianmeng Chen, Kevin Qian, Zeyuan Chen, Yizhu Zhang",
   "license": "ISC"

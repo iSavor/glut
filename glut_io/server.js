@@ -7,9 +7,9 @@ app.use('/styles', express.static(__dirname + '/styles'));
 app.use('/scripts', express.static(__dirname + '/scripts'));
 app.use('/assets', express.static(__dirname + '/assets'));
 
-app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
-});
+//app.get('/', function(req, res) {
+//    res.sendFile(__dirname + '/index.html');
+//});
 
 server.listen('8080', function() {
     console.log('Listening on ' + server.address().port);
@@ -104,3 +104,39 @@ function getAllPlayerStructs(id) {
 function randomInt(low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }
+
+var mongoose = require('mongoose');
+var passport = require('passport');
+var flash = require('connect-flash');
+
+var morgan = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var session = require('express-session');
+
+var hbs = require('express-handlebars');
+
+var configDB = require('./config/database.js');
+
+mongoose.connect(configDB.url);
+var db = mongoose.connection;
+db.on('error', function() {});
+db.once('open', function() {});
+
+app.use(morgan('dev'));
+app.use(cookieParser());
+app.use(bodyParser());
+
+require('./config/passport')(passport);
+
+app.set('view engine', 'ejs');
+
+
+app.use(session({
+    secret: 'crazy_omg_what_i_have_done'
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
+require('./app/router.js')(app, passport);
