@@ -1,8 +1,8 @@
 var Client = {};
 Client.socket = io.connect();
 
-Client.askNewPlayer = function() {
-    Client.socket.emit('newplayer');
+Client.requestJoinGame = function() {
+    Client.socket.emit('joinRequest');
 };
 
 Client.changeVelo = function(v) {
@@ -13,16 +13,24 @@ Client.slowDown = function() {
     Client.socket.emit('slowDown');
 }
 
+Client.broadcastSelfPos = function (x, y) {
+    Client.socket.emit('updateAndBroadcastSelfStructPos', {x: x, y: y})
+}
+
 Client.socket.on('setCam', function(id){
 	Game.setCam(id);
 });
 
-Client.socket.on('newplayer', function(data) {
-	console.log("new");
-    Game.addNewPlayer(data.id, data.x, data.y, data.v);
+Client.socket.on('createSelf', function (struct) {
+    Game.createSelfPlayer(struct.id, struct.x, struct.y, struct.v);
 });
 
-Client.socket.on('allplayers', function(data) {
+Client.socket.on('notifyNewComer', function (struct) {
+	console.log("new comer!!!");
+    Game.addNewPlayer(struct.id, struct.x, struct.y, struct.v);
+});
+
+Client.socket.on('allPlayers', function(data) {
     for (var i = 0; i < data.length; i++) {
         Game.addNewPlayer(data[i].id, data[i].x, data[i].y, data[i].v);
     }
@@ -32,12 +40,12 @@ Client.socket.on('remove', function(id) {
     Game.removePlayer(id);
 });
 
-Client.socket.on('move', function(player) {
-	console.log(player.v)
-    Game.movePlayer(player);
+Client.socket.on('updateSelfVelo', function(selfStruct) {
+    Game.moveSelfPlayer(selfStruct);
 });
 
-Client.socket.on('moveother', function(player) {
-    console.log(player.v)
-    Game.moveOtherPlayer(player);
+Client.socket.on('updatePosOf', function(struct) {
+    if (Game) {
+        Game.moveOtherPlayer(struct);
+    }
 });

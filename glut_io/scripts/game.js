@@ -29,7 +29,7 @@ Game.create = function() {
     Game.playerMap = {};
     var background = game.add.tileSprite(0, 0, 1920, 1920, 'background');
     game.world.setBounds(0, 0, 1920, 1920);
-    Client.askNewPlayer();
+    Client.requestJoinGame();
     console.log('created');
 }
 
@@ -45,7 +45,28 @@ Game.update = function() {
     } else if (cursors.down.isDown) {
         Client.changeVelo([0, 20]);
     }
+    
+    if (Game.local.actor) {
+        Client.broadcastSelfPos(Game.local.actor.body.position.x, Game.local.actor.body.position.y);
+    }
+}
 
+Game.local = {
+    actor: null,
+    id: -1
+};
+
+Game.createSelfPlayer = function (id, x, y, v) {
+    Game.local.actor = game.add.sprite(x, y, 'player');
+    Game.local.id = id;
+    Game.playerMap[id] = Game.local.actor;
+    game.physics.enable(Game.playerMap[id], Phaser.Physics.ARCADE);
+    Game.local.actor.body.velocity.x = v[0];
+    Game.local.actor.body.velocity.y = v[1];
+    Game.local.actor.body.collideWorldBounds = true;
+    
+    game.camera.follow(Game.local.actor);
+    //Game.setCam(Game.local.actor);
 }
 
 Game.addNewPlayer = function(id, x, y, v) {
@@ -56,19 +77,16 @@ Game.addNewPlayer = function(id, x, y, v) {
     Game.playerMap[id].body.collideWorldBounds = true;
 };
 
-Game.setCam = function(id){
-    game.camera.follow(Game.playerMap[id]);
+Game.setCam = function(actor){
+    game.camera.follow(actor);
 }
 
 Game.removePlayer = function(id) {
-    if (id >= Game.playerMap.length) {
-        return;
-    }
     Game.playerMap[id].destroy();
     delete Game.playerMap[id];
 };
 
-Game.movePlayer = function(player) {
+Game.moveSelfPlayer = function(player) {
     if (!(player.id in Game.playerMap)) {
         return;
     }
@@ -77,9 +95,13 @@ Game.movePlayer = function(player) {
 }
 
 Game.moveOtherPlayer = function(player) {
+    if (! Game.playerMap) {
+        return;
+    }
     if (!(player.id in Game.playerMap)) {
         return;
     }
-    Game.playerMap[player.id].body.position.x = player.x;
-    Game.playerMap[player.id].body.position.y = player.y;
+    debugger;
+    Game.playerMap[player.id].x = player.x;
+    Game.playerMap[player.id].y = player.y;
 }

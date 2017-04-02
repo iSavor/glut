@@ -18,66 +18,85 @@ server.listen('8080', function() {
 server.lastPlayderID = 0;
 
 io.on('connection', function(socket) {
-    socket.on('newplayer', function() {
-        socket.player = {
+    socket.on('joinRequest', function() {
+        socket.playerStruct = {
             id: server.lastPlayderID++,
             x: randomInt(0, 1920),
             y: randomInt(0, 1920),
             v: [0, 0]
         };
-        socket.emit('allplayers', getAllPlayers());
-        socket.broadcast.emit('newplayer', socket.player);
-        socket.emit('setCam', socket.player.id);
+        
+        socket.emit('createSelf', socket.playerStruct);
+        socket.emit('allPlayers', getAllPlayerStructs(socket.playerStruct.id));
+        
+        
+        socket.broadcast.emit('notifyNewComer', socket.playerStruct);
+        //=============
 
         socket.on('disconnect', function() {
-            io.emit('remove', socket.player.id);
+            io.emit('remove', socket.playerStruct.id);
         });
 
         socket.on('changeVelo', function(v) {
-            socket.player.v = socket.player.v.map((ele, index) => ele + v[index]);
-            if (socket.player.v[0] > 200) {
-                socket.player.v[0] = 200;
-            } else if (socket.player.v[0] < -200) {
-                socket.player.v[0] = -200;
+            socket.playerStruct.v = socket.playerStruct.v.map((ele, index) => ele + v[index]);
+            if (socket.playerStruct.v[0] > 200) {
+                socket.playerStruct.v[0] = 200;
+            } else if (socket.playerStruct.v[0] < -200) {
+                socket.playerStruct.v[0] = -200;
             }
-            if (socket.player.v[1] > 200) {
-                socket.player.v[1] = 200;
-            } else if (socket.player.v[1] < -200) {
-                socket.player.v[1] = -200;
+            if (socket.playerStruct.v[1] > 200) {
+                socket.playerStruct.v[1] = 200;
+            } else if (socket.playerStruct.v[1] < -200) {
+                socket.playerStruct.v[1] = -200;
             }
-            socket.broadcast.emit('moveother', socket.player);
-            socket.emit('move', socket.player);
+            socket.broadcast.emit('updatePosOf', socket.playerStruct);
+            socket.emit('updateSelfVelo', socket.playerStruct);
         });
 
         socket.on('slowDown', function() {
-            if (socket.player.v[0] != 0) {
-                if (socket.player.v[0] > 0) {
-                    socket.player.v[0] -= 10;
+            if (socket.playerStruct.v[0] != 0) {
+                if (socket.playerStruct.v[0] > 0) {
+                    socket.playerStruct.v[0] -= 10;
                 } else {
-                    socket.player.v[0] += 10;
+                    socket.playerStruct.v[0] += 10;
                 }
             }
-            if (socket.player.v[1] != 0) {
-                if (socket.player.v[1] > 0) {
-                    socket.player.v[1] -= 10;
+            if (socket.playerStruct.v[1] != 0) {
+                if (socket.playerStruct.v[1] > 0) {
+                    socket.playerStruct.v[1] -= 10;
                 } else {
-                    socket.player.v[1] += 10;
+                    socket.playerStruct.v[1] += 10;
                 }
             }
-            socket.broadcast.emit('moveother', socket.player);
-            socket.emit('move', socket.player);
-            //io.emit('move', socket.player);
+            socket.broadcast.emit('updatePosOf', socket.playerStruct);
+            socket.emit('updateSelfVelo', socket.playerStruct);
+            //io.emit('move', socket.playerStruct);
         });
+        
+        socket.on('broadcastSelfPos', function (data) {
+            socket.broadcast.emit('updatePosOf', socket.playerStruct);
+        });
+        
+        socket.on('updateAndBroadcastSelfStructPos', function (data) {
+            socket.playerStruct.x = data.x;
+            socket.playerStruct.y = data.y;
+            socket.broadcast.emit('updatePosOf', socket.playerStruct);
+        })
     });
 });
 
-function getAllPlayers() {
-    var players = [];
-    Object.keys(io.sockets.connected).forEach(function(socketID) {
-        var player = io.sockets.connected[socketID].player;
-        if (player) players.push(player);
+function getAllPlayerStructs(id) {
+    var playerStructs = [];
+    Object.keys(io.sockets.sockets).forEach(function (socketID) {
+        var aPlayerStruct = io.sockets.sockets[socketID].playerStruct;
+        if (aPlayerStruct) {
+            if (aPlayerStruct.id === id || aPlayerStruct.x === undefined) {
+                return;
+            }
+            playerStructs.push(aPlayerStruct);
+        }
     });
-    return players;
+    return playerStructs;
 }
 
 function randomInt(low, high) {
