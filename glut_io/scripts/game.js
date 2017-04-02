@@ -53,6 +53,7 @@ Game.addNewPlayer = function(id, x, y, v) {
     game.physics.enable(Game.playerMap[id], Phaser.Physics.ARCADE);
     Game.playerMap[id].body.velocity.x = v[0];
     Game.playerMap[id].body.velocity.y = v[1];
+    Game.playerMap[id].body.collideWorldBounds = true;
 };
 
 Game.setCam = function(id){
