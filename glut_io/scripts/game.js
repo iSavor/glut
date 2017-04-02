@@ -79,7 +79,7 @@ Game.update = function() {
     }
 
     if (Game.local.actor) {
-        Client.broadcastSelfPos(Game.local.actor.body.position.x, Game.local.actor.body.position.y);
+        Client.broadcastSelfPos(Game.local.actor.body.position.x, Game.local.actor.body.position.y, Game.local.actor.rotation);
     }
     
     
@@ -99,14 +99,16 @@ Game.render = function(){
     game.debug.spriteInfo(Game.local.actor, 32, 32);
 }
 
-
-Game.createSelfPlayer = function (id, x, y, v) {
+// Rot add
+Game.createSelfPlayer = function (id, x, y, v, r) {
     Game.local.actor = game.add.sprite(x, y, 'player');
     Game.local.id = id;
     Game.playerMap[id] = Game.local.actor;
     game.physics.enable(Game.playerMap[id], Phaser.Physics.ARCADE);
     Game.local.actor.body.velocity.x = v[0];
     Game.local.actor.body.velocity.y = v[1];
+    //Game.local.actor.rotation = r;
+    
     Game.local.actor.body.collideWorldBounds = true;
     
     game.camera.follow(Game.local.actor);
@@ -116,13 +118,16 @@ Game.createSelfPlayer = function (id, x, y, v) {
     allPlayers.push(Game.local.actor);
 }
 
-Game.addNewPlayer = function(id, x, y, v) {
+// Rot add
+Game.addNewPlayer = function(id, x, y, v, r) {
     Game.playerMap[id] = game.add.sprite(x, y, 'player');
+    
     game.physics.enable(Game.playerMap[id], Phaser.Physics.ARCADE);
     
     // ?????
     Game.playerMap[id].body.velocity.x = v[0];
     Game.playerMap[id].body.velocity.y = v[1];
+    Game.playerMap[id].rotation = r;
     
     Game.playerMap[id].body.collideWorldBounds = true;
     
@@ -152,6 +157,7 @@ Game.moveSelfPlayer = function(player) {
     //Game.playerMap[player.id].body.velocity.y = player.v[1];
 }
 
+// Rot Add
 Game.moveOtherPlayer = function(player) {
     if (! Game.playerMap) {
         return;
@@ -161,6 +167,7 @@ Game.moveOtherPlayer = function(player) {
     }
     Game.playerMap[player.id].x = player.x;
     Game.playerMap[player.id].y = player.y;
+    Game.playerMap[player.id].rotation = player.r;
 }
 
 Game.generateFoodOnce = function (amt) {

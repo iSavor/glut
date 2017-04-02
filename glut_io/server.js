@@ -23,7 +23,8 @@ io.on('connection', function(socket) {
             id: server.lastPlayderID++,
             x: randomInt(0, 1920),
             y: randomInt(0, 1920),
-            v: [0, 0]
+            v: [0, 0],
+            r: 0
         };
         
         socket.emit('createSelf', socket.playerStruct);
@@ -70,16 +71,17 @@ io.on('connection', function(socket) {
             }
             socket.broadcast.emit('updatePosOf', socket.playerStruct);
             socket.emit('updateSelfVelo', socket.playerStruct);
-            //io.emit('move', socket.playerStruct);
         });
         
         socket.on('broadcastSelfPos', function (data) {
             socket.broadcast.emit('updatePosOf', socket.playerStruct);
         });
         
+        // Rot add
         socket.on('updateAndBroadcastSelfStructPos', function (data) {
             socket.playerStruct.x = data.x;
             socket.playerStruct.y = data.y;
+            socket.playerStruct.r = data.r;
             socket.broadcast.emit('updatePosOf', socket.playerStruct);
         })
     });
